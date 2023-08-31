@@ -10,14 +10,11 @@ import java.time.LocalDateTime;
 @Data
 public class Account extends Entity {
 
-    @NonNull
-    private long userId;
-    @NonNull
-    private long bankId;
+    private User user;
+    private Bank bank;
     @NonNull
     private Currency currency;
-    @NonNull
-    private Long accountNumber;
-    private final LocalDateTime date = LocalDateTime.now();
+    private int accountNumber;
+    private final LocalDateTime creationDate = LocalDateTime.now();
     private BigDecimal balance = BigDecimal.ZERO;
 }
