@@ -7,17 +7,22 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@RequiredArgsConstructor
 @ToString
 public class Transaction extends Entity {
 
-    private long accountSenderId;
-    private long accountReceiverId;
+    private Account accountSender;
+    private Account accountReceiver;
     private LocalDateTime dateTime = LocalDateTime.now();
     @NonNull
     private BigDecimal sum;
 
     public Transaction(long id) {
         this.id = id;
+    }
+
+    public Transaction(Account accountSender, Account accountReceiver, @NonNull BigDecimal sum) {
+        this.accountSender = accountSender;
+        this.accountReceiver = accountReceiver;
+        this.sum = sum;
     }
 }

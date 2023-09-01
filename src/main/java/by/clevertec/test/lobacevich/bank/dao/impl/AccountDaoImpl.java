@@ -1,52 +1,58 @@
 package by.clevertec.test.lobacevich.bank.dao.impl;
 
 import by.clevertec.test.lobacevich.bank.dao.AccountDao;
+import by.clevertec.test.lobacevich.bank.dao.BankDao;
+import by.clevertec.test.lobacevich.bank.dao.UserDao;
 import by.clevertec.test.lobacevich.bank.entity.Account;
-import by.clevertec.test.lobacevich.bank.entity.enums.Currency;
 import by.clevertec.test.lobacevich.bank.exception.DataBaseException;
-import lombok.Cleanup;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
 
-    public static final String CREATE_ACCOUNT = "INSERT INTO accounts(user_id, bank_id, currency, account_number, " +
-            "creation_date, balance VALUES(?, ?, ?, ?, ?, ?);";
-    public static final String UPDATE_ACCOUNT = "UPDATE accounts SET user_id=?, bank_id=?, currency=?, " +
+    private final UserDao userDao = UserDaoImpl.getInstance();
+    private final BankDao bankDao = BankDaoImpl.getInstance();
+    public static AccountDaoImpl INSTANCE = new AccountDaoImpl();
+    public static final String CREATE_ACCOUNT = "INSERT INTO accounts(user_id, bank_id, account_number, " +
+            "creation_date, balance) VALUES(?, ?, ?, ?, ?);";
+    public static final String UPDATE_ACCOUNT = "UPDATE accounts SET user_id=?, bank_id=?, " +
             "account_number=?, creation_date=?, balance=? WHERE id=?;";
     public static final String DELETE_ACCOUNT = "DELETE FROM accounts WHERE id=?;";
     public static final String GET_BY_ID = "SELECT * FROM accounts WHERE id=?";
 
+    private AccountDaoImpl() {
+    }
+
+    public static AccountDaoImpl getInstance() {
+        return INSTANCE;
+    }
+
     @Override
     public void createEntity(Account account, Connection connection) throws DataBaseException {
-        try {
-            getAccountPreparedStatement(account, connection, CREATE_ACCOUNT).executeUpdate();
+        try (PreparedStatement ps = connection.prepareStatement(CREATE_ACCOUNT)) {
+            ps.setLong(1, account.getUser().getId());
+            ps.setLong(2, account.getBank().getId());
+            ps.setInt(3, account.getAccountNumber());
+            ps.setDate(4, Date.valueOf(account.getCreationDate()));
+            ps.setBigDecimal(5, account.getBalance());
+            ps.executeUpdate();
         } catch (SQLException e) {
             throw new DataBaseException("DB failed: Can't create account");
         }
     }
 
-    private PreparedStatement getAccountPreparedStatement(Account account, Connection connection, String sql)
-            throws SQLException {
-        @Cleanup
-        PreparedStatement ps = connection.prepareStatement(sql);
-        ps.setLong(1, account.getUserId());
-        ps.setLong(2, account.getBankId());
-        ps.setString(3, account.getCurrency().toString());
-        ps.setInt(4, account.getAccountNumber());
-        ps.setObject(5, account.getCreationDate());
-        ps.setBigDecimal(6, account.getBalance());
-        return ps;
-    }
-
     @Override
     public void updateEntity(Account account, Connection connection) throws DataBaseException {
-        try {
-            getAccountPreparedStatement(account, connection, UPDATE_ACCOUNT).executeUpdate();
+        try (PreparedStatement ps = connection.prepareStatement(UPDATE_ACCOUNT)) {
+            ps.setLong(1, account.getUser().getId());
+            ps.setLong(2, account.getBank().getId());
+            ps.setInt(3, account.getAccountNumber());
+            ps.setDate(4, Date.valueOf(account.getCreationDate()));
+            ps.setBigDecimal(5, account.getBalance());
+            ps.setLong(6, account.getId());
+            ps.executeUpdate();
         } catch (SQLException e) {
             throw new DataBaseException("DB failed: Can't update account");
         }
@@ -68,7 +74,7 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
             ps.setLong(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                return resultSetToAccount(rs);
+                return resultSetToAccount(rs, connection);
             } else {
                 return null;
             }
@@ -77,18 +83,17 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
         }
     }
 
-    private Account resultSetToAccount(ResultSet rs) {
+    private Account resultSetToAccount(ResultSet rs, Connection connection) throws DataBaseException {
         try {
             Account account = new Account(rs.getLong("id"));
-            account.setUserId(rs.getLong("user_id"));
-            account.setBankId(rs.getLong("bank_id"));
-            account.setCurrency(Currency.valueOf(rs.getString("currency")));
+            account.setUser(userDao.getEntityById(rs.getLong("user_id"), connection));
+            account.setBank(bankDao.getEntityById(rs.getLong("bank_id"), connection));
             account.setAccountNumber(rs.getInt("account_number"));
-            account.setCreationDate((LocalDateTime) rs.getObject("creation_date"));
+            account.setCreationDate(rs.getDate("creation_date").toLocalDate());
             account.setBalance(rs.getBigDecimal("balance"));
             return account;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataBaseException("DB failed: Can't load account");
         }
     }
 }
