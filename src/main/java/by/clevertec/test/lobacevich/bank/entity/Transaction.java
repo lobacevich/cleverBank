@@ -1,17 +1,23 @@
 package by.clevertec.test.lobacevich.bank.entity;
 
-import lombok.Data;
-import lombok.NonNull;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
+@ToString
 public class Transaction extends Entity {
 
-    private Account accountSender;
-    private Account accountReceiver;
-    private final LocalDateTime dateTime = LocalDateTime.now();
+    private long accountSenderId;
+    private long accountReceiverId;
+    private LocalDateTime dateTime = LocalDateTime.now();
     @NonNull
     private BigDecimal sum;
+
+    public Transaction(long id) {
+        this.id = id;
+    }
 }

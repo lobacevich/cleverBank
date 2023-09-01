@@ -1,9 +1,11 @@
 package by.clevertec.test.lobacevich.bank.entity;
 
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
+@ToString
 public abstract class Entity {
 
-    protected int id;
+    protected long id;
 }

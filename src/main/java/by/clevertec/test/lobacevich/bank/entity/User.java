@@ -1,9 +1,11 @@
 package by.clevertec.test.lobacevich.bank.entity;
 
-import lombok.Data;
-import lombok.NonNull;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
+@ToString(callSuper = true)
 public class User extends Entity {
 
     @NonNull
@@ -14,4 +16,8 @@ public class User extends Entity {
     private String passportPersonalNumber;
     @NonNull
     private String address;
+
+    public User(long id) {
+        this.id = id;
+    }
 }

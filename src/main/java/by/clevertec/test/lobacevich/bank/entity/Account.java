@@ -1,20 +1,26 @@
 package by.clevertec.test.lobacevich.bank.entity;
 
 import by.clevertec.test.lobacevich.bank.entity.enums.Currency;
-import lombok.Data;
-import lombok.NonNull;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
+@RequiredArgsConstructor
+@ToString
 public class Account extends Entity {
 
-    private User user;
-    private Bank bank;
+    private long userId;
+    private long bankId;
     @NonNull
     private Currency currency;
     private int accountNumber;
-    private final LocalDateTime creationDate = LocalDateTime.now();
-    private BigDecimal balance = BigDecimal.ZERO;
+    private LocalDateTime creationDate;
+    private BigDecimal balance;
+
+    public Account(long id) {
+        this.id = id;
+    }
 }
