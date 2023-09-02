@@ -13,6 +13,8 @@ public class User extends Entity {
     @NonNull
     private String lastname;
     @NonNull
+    private String surname;
+    @NonNull
     private String passportPersonalNumber;
     @NonNull
     private String address;

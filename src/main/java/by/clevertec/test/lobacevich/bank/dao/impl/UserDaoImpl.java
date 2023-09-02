@@ -11,14 +11,14 @@ import java.sql.SQLException;
 
 public class UserDaoImpl extends AbstractDao<User> implements UserDao {
 
-    public static UserDaoImpl INSTANCE = new UserDaoImpl();
+    private static UserDaoImpl INSTANCE = new UserDaoImpl();
 
-    public static final String CREATE_USER = "INSERT INTO users(firstname, lastname, personal_number, address) " +
-            "VALUES(?, ?, ?, ?);";
-    public static final String UPDATE_USER = "UPDATE users SET firstname=?, lastname=?, personal_number=?, " +
+    private static final String CREATE_USER = "INSERT INTO users(firstname, lastname, surname, personal_number, address) " +
+            "VALUES(?, ?, ?, ?, ?);";
+    private static final String UPDATE_USER = "UPDATE users SET firstname=?, lastname=?, surname=?, personal_number=?, " +
             "address=? WHERE id=?;";
-    public static final String DELETE_USER = "DELETE FROM users WHERE id=?;";
-    public static final String GET_BY_ID = "SELECT * FROM users WHERE id=?";
+    private static final String DELETE_USER = "DELETE FROM users WHERE id=?;";
+    private static final String GET_BY_ID = "SELECT * FROM users WHERE id=?";
 
     private UserDaoImpl() {
     }
@@ -32,8 +32,9 @@ public class UserDaoImpl extends AbstractDao<User> implements UserDao {
         try (PreparedStatement ps = connection.prepareStatement(CREATE_USER)) {
             ps.setString(1, user.getFirstname());
             ps.setString(2, user.getLastname());
-            ps.setString(3, user.getPassportPersonalNumber());
-            ps.setString(4, user.getAddress());
+            ps.setString(3, user.getSurname());
+            ps.setString(4, user.getPassportPersonalNumber());
+            ps.setString(5, user.getAddress());
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new DataBaseException("DB failed: Can't create user");
@@ -45,9 +46,10 @@ public class UserDaoImpl extends AbstractDao<User> implements UserDao {
         try (PreparedStatement ps = connection.prepareStatement(UPDATE_USER)) {
             ps.setString(1, user.getFirstname());
             ps.setString(2, user.getLastname());
-            ps.setString(3, user.getPassportPersonalNumber());
-            ps.setString(4, user.getAddress());
-            ps.setLong(5, user.getId());
+            ps.setString(3, user.getSurname());
+            ps.setString(4, user.getPassportPersonalNumber());
+            ps.setString(5, user.getAddress());
+            ps.setLong(6, user.getId());
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new DataBaseException("DB failed: Can't update user");
@@ -84,6 +86,7 @@ public class UserDaoImpl extends AbstractDao<User> implements UserDao {
             User user = new User(rs.getLong("id"));
             user.setFirstname(rs.getString("firstname"));
             user.setLastname(rs.getString("lastname"));
+            user.setSurname(rs.getString("surname"));
             user.setPassportPersonalNumber(rs.getString("personal_number"));
             user.setAddress(rs.getString("address"));
             return user;

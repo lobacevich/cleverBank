@@ -7,5 +7,5 @@ import lombok.ToString;
 @ToString
 public abstract class Entity {
 
-    protected long id;
+    protected Long id;
 }

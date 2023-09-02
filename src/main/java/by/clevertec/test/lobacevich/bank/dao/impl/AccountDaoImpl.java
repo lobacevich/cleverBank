@@ -7,20 +7,18 @@ import by.clevertec.test.lobacevich.bank.entity.Account;
 import by.clevertec.test.lobacevich.bank.exception.DataBaseException;
 
 import java.sql.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
 
     private final UserDao userDao = UserDaoImpl.getInstance();
     private final BankDao bankDao = BankDaoImpl.getInstance();
-    public static AccountDaoImpl INSTANCE = new AccountDaoImpl();
-    public static final String CREATE_ACCOUNT = "INSERT INTO accounts(user_id, bank_id, account_number, " +
+    private static final AccountDaoImpl INSTANCE = new AccountDaoImpl();
+    private static final String CREATE_ACCOUNT = "INSERT INTO accounts(user_id, bank_id, account_number, " +
             "creation_date, balance) VALUES(?, ?, ?, ?, ?);";
-    public static final String UPDATE_ACCOUNT = "UPDATE accounts SET user_id=?, bank_id=?, " +
+    private static final String UPDATE_ACCOUNT = "UPDATE accounts SET user_id=?, bank_id=?, " +
             "account_number=?, creation_date=?, balance=? WHERE id=?;";
-    public static final String DELETE_ACCOUNT = "DELETE FROM accounts WHERE id=?;";
-    public static final String GET_BY_ID = "SELECT * FROM accounts WHERE id=?";
+    private static final String DELETE_ACCOUNT = "DELETE FROM accounts WHERE id=?;";
+    private static final String GET_BY_ID = "SELECT * FROM accounts WHERE id=?";
 
     private AccountDaoImpl() {
     }
@@ -34,7 +32,7 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
         try (PreparedStatement ps = connection.prepareStatement(CREATE_ACCOUNT)) {
             ps.setLong(1, account.getUser().getId());
             ps.setLong(2, account.getBank().getId());
-            ps.setInt(3, account.getAccountNumber());
+            ps.setString(3, account.getAccountNumber());
             ps.setDate(4, Date.valueOf(account.getCreationDate()));
             ps.setBigDecimal(5, account.getBalance());
             ps.executeUpdate();
@@ -48,7 +46,7 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
         try (PreparedStatement ps = connection.prepareStatement(UPDATE_ACCOUNT)) {
             ps.setLong(1, account.getUser().getId());
             ps.setLong(2, account.getBank().getId());
-            ps.setInt(3, account.getAccountNumber());
+            ps.setString(3, account.getAccountNumber());
             ps.setDate(4, Date.valueOf(account.getCreationDate()));
             ps.setBigDecimal(5, account.getBalance());
             ps.setLong(6, account.getId());
@@ -88,7 +86,7 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
             Account account = new Account(rs.getLong("id"));
             account.setUser(userDao.getEntityById(rs.getLong("user_id"), connection));
             account.setBank(bankDao.getEntityById(rs.getLong("bank_id"), connection));
-            account.setAccountNumber(rs.getInt("account_number"));
+            account.setAccountNumber(rs.getString("account_number"));
             account.setCreationDate(rs.getDate("creation_date").toLocalDate());
             account.setBalance(rs.getBigDecimal("balance"));
             return account;

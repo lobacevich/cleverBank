@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@ToString
+@ToString(callSuper = true)
 public class Transaction extends Entity {
 
     private Account accountSender;

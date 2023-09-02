@@ -12,12 +12,12 @@ public class TransactionDaoImpl extends AbstractDao<Transaction> implements Tran
 
     private final AccountDao accountDao = AccountDaoImpl.getInstance();
     private static final TransactionDaoImpl INSTANCE = new TransactionDaoImpl();
-    public static final String CREATE_TRANSACTION = "INSERT INTO transactions(account_sender_id, " +
+    private static final String CREATE_TRANSACTION = "INSERT INTO transactions(account_sender_id, " +
             "account_receiver_id, date_time, summ) VALUES(?, ?, ?, ?);";
-    public static final String UPDATE_TRANSACTION = "UPDATE transactions SET account_sender_id=?, " +
+    private static final String UPDATE_TRANSACTION = "UPDATE transactions SET account_sender_id=?, " +
             "account_receiver_id=?, date_time=?, summ=? WHERE id=?;";
-    public static final String DELETE_TRANSACTION = "DELETE FROM transactions WHERE id=?;";
-    public static final String GET_BY_ID = "SELECT * FROM transactions WHERE id=?";
+    private static final String DELETE_TRANSACTION = "DELETE FROM transactions WHERE id=?;";
+    private static final String GET_BY_ID = "SELECT * FROM transactions WHERE id=?";
 
     private TransactionDaoImpl() {
     }
@@ -32,14 +32,13 @@ public class TransactionDaoImpl extends AbstractDao<Transaction> implements Tran
             if (transaction.getAccountSender() != null) {
                 ps.setLong(1, transaction.getAccountSender().getId());
             } else {
-                ps.setLong(1, -1);
+                ps.setObject(1, null);
             }
             if (transaction.getAccountReceiver() != null) {
                 ps.setLong(2, transaction.getAccountReceiver().getId());
             } else {
-                ps.setLong(2, -1);
+                ps.setObject(2, null);
             }
-            ps.setLong(2, transaction.getAccountReceiver().getId());
             ps.setObject(3, transaction.getDateTime());
             ps.setBigDecimal(4, transaction.getSum());
             ps.executeUpdate();
@@ -54,12 +53,12 @@ public class TransactionDaoImpl extends AbstractDao<Transaction> implements Tran
             if (transaction.getAccountSender() != null) {
                 ps.setLong(1, transaction.getAccountSender().getId());
             } else {
-                ps.setLong(1, -1);
+                ps.setObject(1, null);
             }
             if (transaction.getAccountReceiver() != null) {
                 ps.setLong(2, transaction.getAccountReceiver().getId());
             } else {
-                ps.setLong(2, -1);
+                ps.setObject(2, null);
             }
             ps.setObject(3, transaction.getDateTime());
             ps.setBigDecimal(4, transaction.getSum());

@@ -11,12 +11,12 @@ import java.sql.SQLException;
 
 public class BankDaoImpl extends AbstractDao<Bank> implements BankDao {
 
-    public static BankDaoImpl INSTANCE = new BankDaoImpl();
+    private static final BankDaoImpl INSTANCE = new BankDaoImpl();
 
-    public static final String CREATE_BANK = "INSERT INTO banks(name, address) VALUES(?, ?);";
-    public static final String UPDATE_BANK = "UPDATE banks SET name=?, address=? WHERE id=?;";
-    public static final String DELETE_BANK = "DELETE FROM banks WHERE id=?;";
-    public static final String GET_BY_ID = "SELECT * FROM banks WHERE id=?";
+    private static final String CREATE_BANK = "INSERT INTO banks(name, address) VALUES(?, ?);";
+    private static final String UPDATE_BANK = "UPDATE banks SET name=?, address=? WHERE id=?;";
+    private static final String DELETE_BANK = "DELETE FROM banks WHERE id=?;";
+    private static final String GET_BY_ID = "SELECT * FROM banks WHERE id=?";
 
     private BankDaoImpl() {
     }
@@ -27,7 +27,7 @@ public class BankDaoImpl extends AbstractDao<Bank> implements BankDao {
 
     @Override
     public void createEntity(Bank bank, Connection connection) throws DataBaseException {
-        try (PreparedStatement ps = connection.prepareStatement(CREATE_BANK);){
+        try (PreparedStatement ps = connection.prepareStatement(CREATE_BANK)){
             ps.setString(1, bank.getName());
             ps.setString(2, bank.getAddress());
             ps.executeUpdate();
@@ -38,7 +38,7 @@ public class BankDaoImpl extends AbstractDao<Bank> implements BankDao {
 
     @Override
     public void updateEntity(Bank bank, Connection connection) throws DataBaseException {
-        try (PreparedStatement ps = connection.prepareStatement(UPDATE_BANK);) {
+        try (PreparedStatement ps = connection.prepareStatement(UPDATE_BANK)) {
             ps.setString(1, bank.getName());
             ps.setString(2, bank.getAddress());
             ps.setLong(3, bank.getId());
