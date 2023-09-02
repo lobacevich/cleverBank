@@ -1,25 +1,18 @@
 package by.clevertec.test.lobacevich.bank.main;
 
-import by.clevertec.test.lobacevich.bank.controller.TransactionController;
-import by.clevertec.test.lobacevich.bank.dao.AccountDao;
-import by.clevertec.test.lobacevich.bank.dao.TransactionDao;
-import by.clevertec.test.lobacevich.bank.dao.impl.AccountDaoImpl;
-import by.clevertec.test.lobacevich.bank.dao.impl.TransactionDaoImpl;
-import by.clevertec.test.lobacevich.bank.db.Connect;
-import by.clevertec.test.lobacevich.bank.entity.Account;
+import by.clevertec.test.lobacevich.bank.controller.AccountController;
 import by.clevertec.test.lobacevich.bank.exception.DataBaseException;
-
-import java.sql.Connection;
+import by.clevertec.test.lobacevich.bank.service.AccountService;
+import by.clevertec.test.lobacevich.bank.service.impl.AccountServiceImpl;
+import by.clevertec.test.lobacevich.bank.ui.MenuController;
 
 public class Main {
+
+    static MenuController menuController = MenuController.getInstance();
+    static AccountController accountController = AccountController.getINSTANCE();
+    static AccountService accountService = AccountServiceImpl.getINSTANCE();
     public static void main(String[] args) throws DataBaseException {
 
-        Connection connection = Connect.getConnection();
-        AccountDao accountDao = AccountDaoImpl.getInstance();
-        TransactionDao transactionDao = TransactionDaoImpl.getInstance();
-        TransactionController transactionController = TransactionController.getInstance();
-
-        Account account = accountDao.getEntityById(41, connection);
-        transactionController.withdrawFunds(account, 1000.0);
+        menuController.run();
     }
 }

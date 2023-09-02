@@ -17,7 +17,6 @@ import java.sql.Connection;
 public class TransactionServiceImpl implements TransactionService {
 
     private static final TransactionServiceImpl INSTANCE = new TransactionServiceImpl();
-
     private final Connection connection = Connect.getConnection();
     private final TransactionDao transactionDao = TransactionDaoImpl.getInstance();
     private final AccountDao accountDao = AccountDaoImpl.getInstance();
@@ -30,7 +29,8 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public void topUpAccount(Account account, Double sum) throws DataBaseException {
+    public void topUpAccount(String accountNumber, Double sum) throws DataBaseException {
+        Account account = accountDao.getAccountByNumber(accountNumber, connection);
         account.setBalance(account.getBalance().add(BigDecimal.valueOf(sum)));
         Transaction transaction = new Transaction(null, account, BigDecimal.valueOf(sum));
         accountDao.updateEntity(account, connection);
@@ -38,8 +38,9 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public void withdrawFunds(Account account, Double sum)
+    public void withdrawFunds(String accountNumber, Double sum)
             throws DataBaseException, NotEnoughtFundsException {
+        Account account = accountDao.getAccountByNumber(accountNumber, connection);
         if (account.getBalance().compareTo(BigDecimal.valueOf(sum)) >= 0) {
             account.setBalance(account.getBalance().subtract(BigDecimal.valueOf(sum)));
             Transaction transaction = new Transaction(account, null, BigDecimal.valueOf(sum));

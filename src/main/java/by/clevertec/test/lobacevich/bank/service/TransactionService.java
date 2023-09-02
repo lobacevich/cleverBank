@@ -6,8 +6,8 @@ import by.clevertec.test.lobacevich.bank.exception.NotEnoughtFundsException;
 
 public interface TransactionService {
 
-    void topUpAccount(Account account, Double sum) throws DataBaseException;
+    void topUpAccount(String accountNumber, Double sum) throws DataBaseException;
 
-    void withdrawFunds(Account account, Double sum)
+    void withdrawFunds(String accountNumber, Double sum)
             throws DataBaseException, NotEnoughtFundsException;
 }

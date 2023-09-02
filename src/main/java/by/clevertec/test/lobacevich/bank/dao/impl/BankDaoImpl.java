@@ -8,6 +8,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BankDaoImpl extends AbstractDao<Bank> implements BankDao {
 
@@ -17,6 +19,8 @@ public class BankDaoImpl extends AbstractDao<Bank> implements BankDao {
     private static final String UPDATE_BANK = "UPDATE banks SET name=?, address=? WHERE id=?;";
     private static final String DELETE_BANK = "DELETE FROM banks WHERE id=?;";
     private static final String GET_BY_ID = "SELECT * FROM banks WHERE id=?";
+    private static final String GET_ALL = "SELECT * FROM banks";
+    private static final String GET_BY_NAME = "SELECT * FROM banks WHERE name=?";
 
     private BankDaoImpl() {
     }
@@ -81,6 +85,36 @@ public class BankDaoImpl extends AbstractDao<Bank> implements BankDao {
             return bank;
         } catch (SQLException e) {
             throw new DataBaseException("DB failed: Can't load bank");
+        }
+    }
+
+    @Override
+    public List<Bank> getAllEntities(Connection connection) throws DataBaseException {
+        List<Bank> banks = new ArrayList<>();
+        try (PreparedStatement ps = connection.prepareStatement(GET_ALL)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Bank bank = resultSetToBank(rs);
+                banks.add(bank);
+            }
+            return banks;
+        } catch (SQLException e) {
+            throw new DataBaseException("DB failed: Can't load banks");
+        }
+    }
+
+    @Override
+    public Bank getBankByName(String name, Connection connection) throws DataBaseException {
+        try (PreparedStatement ps = connection.prepareStatement(GET_BY_NAME)) {
+            ps.setString(1, name);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return resultSetToBank(rs);
+            } else {
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new DataBaseException("DB failed: Can't get bank by name");
         }
     }
 }

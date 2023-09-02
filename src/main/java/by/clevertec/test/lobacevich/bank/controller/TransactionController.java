@@ -1,5 +1,6 @@
-depackage by.clevertec.test.lobacevich.bank.controller;
+package by.clevertec.test.lobacevich.bank.controller;
 
+import by.clevertec.test.lobacevich.bank.dto.AccountDto;
 import by.clevertec.test.lobacevich.bank.entity.Account;
 import by.clevertec.test.lobacevich.bank.exception.DataBaseException;
 import by.clevertec.test.lobacevich.bank.exception.NotEnoughtFundsException;
@@ -19,18 +20,18 @@ public class TransactionController {
         return INSTANCE;
     }
 
-    public String topUpAccount(Account account, Double sum) {
+    public String topUpAccount(String accountNumber, Double sum) {
         try {
-            transactionService.topUpAccount(account, sum);
+            transactionService.topUpAccount(accountNumber, sum);
             return "Account has been successfully funded";
         } catch (DataBaseException e) {
             return e.getMessage();
         }
     }
 
-    public String withdrawFunds(Account account, Double sum) {
+    public String withdrawFunds(String accountNumber, Double sum) {
         try {
-            transactionService.withdrawFunds(account, sum);
+            transactionService.withdrawFunds(accountNumber, sum);
             return "Funds have been successfully withdrawn";
         } catch (DataBaseException | NotEnoughtFundsException e) {
             return e.getMessage();

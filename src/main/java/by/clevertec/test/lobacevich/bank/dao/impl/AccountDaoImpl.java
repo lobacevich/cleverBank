@@ -7,6 +7,8 @@ import by.clevertec.test.lobacevich.bank.entity.Account;
 import by.clevertec.test.lobacevich.bank.exception.DataBaseException;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
 
@@ -19,6 +21,8 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
             "account_number=?, creation_date=?, balance=? WHERE id=?;";
     private static final String DELETE_ACCOUNT = "DELETE FROM accounts WHERE id=?;";
     private static final String GET_BY_ID = "SELECT * FROM accounts WHERE id=?";
+    private static final String GET_BANK_ACCOUNTS = "SELECT * FROM accounts WHERE bank_id=?";
+    private static final String GET_BY_NUMBER = "SELECT * FROM accounts WHERE account_number=?";
 
     private AccountDaoImpl() {
     }
@@ -92,6 +96,37 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
             return account;
         } catch (SQLException e) {
             throw new DataBaseException("DB failed: Can't load account");
+        }
+    }
+
+    @Override
+    public List<Account> getBankAccounts(Long bank_id, Connection connection) throws DataBaseException {
+        List<Account> accounts = new ArrayList<>();
+        try (PreparedStatement ps = connection.prepareStatement(GET_BANK_ACCOUNTS)) {
+            ps.setLong(1, bank_id);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Account account = resultSetToAccount(rs, connection);
+                accounts.add(account);
+            }
+            return accounts;
+        } catch (SQLException e) {
+            throw new DataBaseException("DB failed: Can't load accounts");
+        }
+    }
+
+    @Override
+    public Account getAccountByNumber(String accountNumber, Connection connection) throws DataBaseException {
+        try (PreparedStatement ps = connection.prepareStatement(GET_BY_NUMBER)) {
+            ps.setString(1, accountNumber);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return resultSetToAccount(rs, connection);
+            } else {
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new DataBaseException("DB failed: Can't get account by id");
         }
     }
 }
