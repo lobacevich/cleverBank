@@ -1,24 +1,16 @@
 package by.clevertec.test.lobacevich.bank.controller;
 
-import by.clevertec.test.lobacevich.bank.dto.AccountDto;
-import by.clevertec.test.lobacevich.bank.entity.Account;
+import by.clevertec.test.lobacevich.bank.di.Dependency;
+import by.clevertec.test.lobacevich.bank.di.Singleton;
 import by.clevertec.test.lobacevich.bank.exception.DataBaseException;
 import by.clevertec.test.lobacevich.bank.exception.NotEnoughtFundsException;
 import by.clevertec.test.lobacevich.bank.service.TransactionService;
-import by.clevertec.test.lobacevich.bank.service.impl.TransactionServiceImpl;
 
+@Singleton
 public class TransactionController {
 
-    private static final TransactionController INSTANCE = new TransactionController();
-
-    private final TransactionService transactionService = TransactionServiceImpl.getInstance();
-
-    private TransactionController() {
-    }
-
-    public static TransactionController getInstance() {
-        return INSTANCE;
-    }
+    @Dependency(implementation = "TransactionServiceImpl")
+    private TransactionService transactionService;
 
     public String topUpAccount(String accountNumber, Double sum) {
         try {

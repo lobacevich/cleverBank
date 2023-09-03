@@ -2,29 +2,25 @@ package by.clevertec.test.lobacevich.bank.dao.impl;
 
 import by.clevertec.test.lobacevich.bank.dao.AccountDao;
 import by.clevertec.test.lobacevich.bank.dao.TransactionDao;
+import by.clevertec.test.lobacevich.bank.di.Dependency;
+import by.clevertec.test.lobacevich.bank.di.Singleton;
 import by.clevertec.test.lobacevich.bank.entity.Transaction;
 import by.clevertec.test.lobacevich.bank.exception.DataBaseException;
 
 import java.sql.*;
 import java.time.LocalDateTime;
 
+@Singleton
 public class TransactionDaoImpl extends AbstractDao<Transaction> implements TransactionDao {
 
-    private final AccountDao accountDao = AccountDaoImpl.getInstance();
-    private static final TransactionDaoImpl INSTANCE = new TransactionDaoImpl();
+    @Dependency(implementation = "AccountDaoImpl")
+    private AccountDao accountDao;
     private static final String CREATE_TRANSACTION = "INSERT INTO transactions(account_sender_id, " +
             "account_receiver_id, date_time, summ) VALUES(?, ?, ?, ?);";
     private static final String UPDATE_TRANSACTION = "UPDATE transactions SET account_sender_id=?, " +
             "account_receiver_id=?, date_time=?, summ=? WHERE id=?;";
     private static final String DELETE_TRANSACTION = "DELETE FROM transactions WHERE id=?;";
     private static final String GET_BY_ID = "SELECT * FROM transactions WHERE id=?";
-
-    private TransactionDaoImpl() {
-    }
-
-    public static TransactionDaoImpl getInstance() {
-        return INSTANCE;
-    }
 
     @Override
     public void createEntity(Transaction transaction, Connection connection) throws DataBaseException {

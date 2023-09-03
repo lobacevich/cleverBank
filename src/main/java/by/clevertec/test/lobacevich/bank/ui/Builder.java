@@ -3,37 +3,33 @@ package by.clevertec.test.lobacevich.bank.ui;
 import by.clevertec.test.lobacevich.bank.controller.AccountController;
 import by.clevertec.test.lobacevich.bank.controller.BankController;
 import by.clevertec.test.lobacevich.bank.controller.TransactionController;
+import by.clevertec.test.lobacevich.bank.di.Dependency;
+import by.clevertec.test.lobacevich.bank.di.Singleton;
 import by.clevertec.test.lobacevich.bank.dto.AccountDto;
 import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Singleton
 public class Builder {
 
     @Getter
     private final Menu rootMenu = new Menu("Выберете банк", new ArrayList<>());
-    private Menu accountMenu = new Menu("Выберете действие", new ArrayList<>());
-    private Menu bankMenu = new Menu("Выберете аккаунт", new ArrayList<>());
-    private ConsoleProcessor console = ConsoleProcessor.getInstance();
-    private TransactionController transactionController = TransactionController.getInstance();
-    private BankController bankController = BankController.getINSTANCE();
-    private AccountController accountController = AccountController.getINSTANCE();
-    private Navigator navigator = Navigator.getINSTANCE();
-    private String accountNumber;
-    private static final Builder INSTANCE = new Builder();
-
-    private Builder() {
-    }
-
-    public static Builder getINSTANCE() {
-        return INSTANCE;
-    }
+    private final Menu accountMenu = new Menu("Выберете действие", new ArrayList<>());
+    private final Menu bankMenu = new Menu("Выберете аккаунт", new ArrayList<>());
+    @Dependency
+    private ConsoleProcessor console;
+    @Dependency
+    private TransactionController transactionController;
+    @Dependency
+    private BankController bankController;
+    @Dependency
+    private AccountController accountController;
 
     public void buildRootMenu() {
         List<String> bankNames = bankController.getBankNames();
-        for (int i = 0; i < bankNames.size(); i++) {
-            String bankName = bankNames.get(i);
+        for (String bankName : bankNames) {
             MenuItem bankList = new MenuItem(bankName, () -> buildBankMenu(bankName), bankMenu);
             rootMenu.addItem(bankList);
         }
@@ -42,8 +38,7 @@ public class Builder {
     public void buildBankMenu(String bankName) {
         bankMenu.getMenuItems().clear();
         List<AccountDto> accountDtoList = accountController.getBankAccountDtos(bankName);
-        for (int i = 0; i < accountDtoList.size(); i++) {
-            AccountDto accountDto = accountDtoList.get(i);
+        for (AccountDto accountDto : accountDtoList) {
             String title = accountDto.getAccountNumber() + "\t" + accountDto.getBalance() + "\t" +
                     accountDto.getFirstname() + " " + accountDto.getLastname() + " " +
                     accountDto.getSurname();

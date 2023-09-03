@@ -8,6 +8,9 @@ import java.util.Map;
 
 public final class YamlReader {
 
+    private YamlReader() {
+    }
+
     public static Map<String, Object> getMap(String filePath) throws IOException {
         @Cleanup
         InputStream in = new FileInputStream(filePath);

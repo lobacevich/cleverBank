@@ -1,6 +1,7 @@
 package by.clevertec.test.lobacevich.bank.dao.impl;
 
 import by.clevertec.test.lobacevich.bank.dao.UserDao;
+import by.clevertec.test.lobacevich.bank.di.Singleton;
 import by.clevertec.test.lobacevich.bank.entity.User;
 import by.clevertec.test.lobacevich.bank.exception.DataBaseException;
 
@@ -9,9 +10,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+@Singleton
 public class UserDaoImpl extends AbstractDao<User> implements UserDao {
-
-    private static UserDaoImpl INSTANCE = new UserDaoImpl();
 
     private static final String CREATE_USER = "INSERT INTO users(firstname, lastname, surname, personal_number, address) " +
             "VALUES(?, ?, ?, ?, ?);";
@@ -19,13 +19,6 @@ public class UserDaoImpl extends AbstractDao<User> implements UserDao {
             "address=? WHERE id=?;";
     private static final String DELETE_USER = "DELETE FROM users WHERE id=?;";
     private static final String GET_BY_ID = "SELECT * FROM users WHERE id=?";
-
-    private UserDaoImpl() {
-    }
-
-    public static UserDaoImpl getInstance() {
-        return INSTANCE;
-    }
 
     @Override
     public void createEntity(User user, Connection connection) throws DataBaseException {

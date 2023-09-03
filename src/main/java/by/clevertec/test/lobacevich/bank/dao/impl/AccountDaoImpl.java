@@ -3,6 +3,8 @@ package by.clevertec.test.lobacevich.bank.dao.impl;
 import by.clevertec.test.lobacevich.bank.dao.AccountDao;
 import by.clevertec.test.lobacevich.bank.dao.BankDao;
 import by.clevertec.test.lobacevich.bank.dao.UserDao;
+import by.clevertec.test.lobacevich.bank.di.Dependency;
+import by.clevertec.test.lobacevich.bank.di.Singleton;
 import by.clevertec.test.lobacevich.bank.entity.Account;
 import by.clevertec.test.lobacevich.bank.exception.DataBaseException;
 
@@ -10,11 +12,13 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Singleton
 public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
 
-    private final UserDao userDao = UserDaoImpl.getInstance();
-    private final BankDao bankDao = BankDaoImpl.getInstance();
-    private static final AccountDaoImpl INSTANCE = new AccountDaoImpl();
+    @Dependency(implementation = "UserDaoImpl")
+    private UserDao userDao;
+    @Dependency(implementation = "BankDaoImpl")
+    private BankDao bankDao;
     private static final String CREATE_ACCOUNT = "INSERT INTO accounts(user_id, bank_id, account_number, " +
             "creation_date, balance) VALUES(?, ?, ?, ?, ?);";
     private static final String UPDATE_ACCOUNT = "UPDATE accounts SET user_id=?, bank_id=?, " +
@@ -23,13 +27,6 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
     private static final String GET_BY_ID = "SELECT * FROM accounts WHERE id=?";
     private static final String GET_BANK_ACCOUNTS = "SELECT * FROM accounts WHERE bank_id=?";
     private static final String GET_BY_NUMBER = "SELECT * FROM accounts WHERE account_number=?";
-
-    private AccountDaoImpl() {
-    }
-
-    public static AccountDaoImpl getInstance() {
-        return INSTANCE;
-    }
 
     @Override
     public void createEntity(Account account, Connection connection) throws DataBaseException {

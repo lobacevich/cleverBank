@@ -1,7 +1,6 @@
 package by.clevertec.test.lobacevich.bank.dao;
 
 import by.clevertec.test.lobacevich.bank.entity.Account;
-import by.clevertec.test.lobacevich.bank.entity.Bank;
 import by.clevertec.test.lobacevich.bank.exception.DataBaseException;
 
 import java.sql.Connection;

@@ -1,6 +1,7 @@
 package by.clevertec.test.lobacevich.bank.dao.impl;
 
 import by.clevertec.test.lobacevich.bank.dao.BankDao;
+import by.clevertec.test.lobacevich.bank.di.Singleton;
 import by.clevertec.test.lobacevich.bank.entity.Bank;
 import by.clevertec.test.lobacevich.bank.exception.DataBaseException;
 
@@ -11,9 +12,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Singleton
 public class BankDaoImpl extends AbstractDao<Bank> implements BankDao {
-
-    private static final BankDaoImpl INSTANCE = new BankDaoImpl();
 
     private static final String CREATE_BANK = "INSERT INTO banks(name, address) VALUES(?, ?);";
     private static final String UPDATE_BANK = "UPDATE banks SET name=?, address=? WHERE id=?;";
@@ -21,13 +21,6 @@ public class BankDaoImpl extends AbstractDao<Bank> implements BankDao {
     private static final String GET_BY_ID = "SELECT * FROM banks WHERE id=?";
     private static final String GET_ALL = "SELECT * FROM banks";
     private static final String GET_BY_NAME = "SELECT * FROM banks WHERE name=?";
-
-    private BankDaoImpl() {
-    }
-
-    public static BankDaoImpl getInstance() {
-        return INSTANCE;
-    }
 
     @Override
     public void createEntity(Bank bank, Connection connection) throws DataBaseException {

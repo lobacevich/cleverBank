@@ -1,18 +1,17 @@
 package by.clevertec.test.lobacevich.bank.ui;
 
+import by.clevertec.test.lobacevich.bank.di.Dependency;
+import by.clevertec.test.lobacevich.bank.di.Singleton;
+
+@Singleton
 public class MenuController {
 
-    private static MenuController INSTANCE = new MenuController();
-    private Builder builder = Builder.getINSTANCE();
-    private Navigator navigator = Navigator.getINSTANCE();
-    private ConsoleProcessor consoleProcessor = ConsoleProcessor.getInstance();
-
-    private MenuController() {
-    }
-
-    public static MenuController getInstance() {
-        return INSTANCE;
-    }
+    @Dependency
+    private Builder builder;
+    @Dependency
+    private Navigator navigator;
+    @Dependency
+    private ConsoleProcessor consoleProcessor;
 
     public void run() {
         builder.buildRootMenu();

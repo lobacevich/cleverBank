@@ -1,23 +1,18 @@
 package by.clevertec.test.lobacevich.bank.controller;
 
+import by.clevertec.test.lobacevich.bank.di.Dependency;
+import by.clevertec.test.lobacevich.bank.di.Singleton;
 import by.clevertec.test.lobacevich.bank.dto.AccountDto;
 import by.clevertec.test.lobacevich.bank.exception.DataBaseException;
 import by.clevertec.test.lobacevich.bank.service.AccountService;
-import by.clevertec.test.lobacevich.bank.service.impl.AccountServiceImpl;
 
 import java.util.List;
 
+@Singleton
 public class AccountController {
 
-    private static final AccountController INSTANCE = new AccountController();
-    private final AccountService accountService = AccountServiceImpl.getINSTANCE();
-
-    private AccountController() {
-    }
-
-    public static AccountController getINSTANCE() {
-        return INSTANCE;
-    }
+    @Dependency(implementation = "AccountServiceImpl")
+    private AccountService accountService;
 
     public List<AccountDto> getBankAccountDtos(String bankName) {
         try {

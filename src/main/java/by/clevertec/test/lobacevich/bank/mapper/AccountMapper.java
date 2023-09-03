@@ -1,18 +1,11 @@
 package by.clevertec.test.lobacevich.bank.mapper;
 
+import by.clevertec.test.lobacevich.bank.di.Singleton;
 import by.clevertec.test.lobacevich.bank.dto.AccountDto;
 import by.clevertec.test.lobacevich.bank.entity.Account;
 
+@Singleton
 public class AccountMapper {
-
-    private static final AccountMapper INSTANCE = new AccountMapper();
-
-    public AccountMapper() {
-    }
-
-    public static AccountMapper getINSTANCE() {
-        return INSTANCE;
-    }
 
     public AccountDto accountToDto(Account account) {
         return AccountDto.builder()

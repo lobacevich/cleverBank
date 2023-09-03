@@ -1,17 +1,17 @@
 package by.clevertec.test.lobacevich.bank.ui;
 
+import by.clevertec.test.lobacevich.bank.di.Singleton;
+import lombok.Setter;
+
 import java.util.List;
 
+@Singleton
 public class Navigator {
 
+    @Setter
     private Menu currentMenu;
-    private static final Navigator INSTANCE = new Navigator();
 
     private Navigator() {
-    }
-
-    public static Navigator getINSTANCE() {
-        return INSTANCE;
     }
 
     public void printMenu() {
@@ -31,13 +31,5 @@ public class Navigator {
         item.doAction();
         setCurrentMenu(item.getNextMenu());
         return true;
-    }
-
-    public Menu getCurrentMenu() {
-        return currentMenu;
-    }
-
-    public void setCurrentMenu(Menu currentMenu) {
-        this.currentMenu = currentMenu;
     }
 }
