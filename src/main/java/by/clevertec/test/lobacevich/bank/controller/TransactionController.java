@@ -15,7 +15,7 @@ public class TransactionController {
     public String topUpAccount(String accountNumber, Double sum) {
         try {
             transactionService.topUpAccount(accountNumber, sum);
-            return "Account has been successfully funded";
+            return "Средства были успешно зачислены";
         } catch (DataBaseException e) {
             return e.getMessage();
         }
@@ -24,8 +24,17 @@ public class TransactionController {
     public String withdrawFunds(String accountNumber, Double sum) {
         try {
             transactionService.withdrawFunds(accountNumber, sum);
-            return "Funds have been successfully withdrawn";
+            return "Средства были успешно сняты";
         } catch (DataBaseException | NotEnoughtFundsException e) {
+            return e.getMessage();
+        }
+    }
+
+    public String makeTransfer(String accountSenderNumber, String accountReceiverNumber, Double sum) {
+        try {
+            transactionService.makeTransfer(accountSenderNumber, accountReceiverNumber, sum);
+            return "Средства были успешно переведены";
+        } catch (NotEnoughtFundsException | DataBaseException e) {
             return e.getMessage();
         }
     }

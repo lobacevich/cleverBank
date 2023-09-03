@@ -26,6 +26,7 @@ public class Builder {
     private BankController bankController;
     @Dependency
     private AccountController accountController;
+    AccountDto accountSender;
 
     public void buildRootMenu() {
         List<String> bankNames = bankController.getBankNames();
@@ -42,7 +43,18 @@ public class Builder {
             String title = accountDto.getAccountNumber() + "\t" + accountDto.getBalance() + "\t" +
                     accountDto.getFirstname() + " " + accountDto.getLastname() + " " +
                     accountDto.getSurname();
-            MenuItem accountList = new MenuItem(title, () -> buildAccountMenu(accountDto), accountMenu);
+            MenuItem accountList = new MenuItem(title, () -> {
+                if (accountSender == null) {
+                    buildAccountMenu(accountDto);
+                } else {
+                    System.out.println("Введите сумму перевода");
+                    Double sum = console.getDoubleInput();
+                    System.out.println(transactionController.makeTransfer(accountSender.getAccountNumber(),
+                            accountDto.getAccountNumber(), sum));
+                    buildAccountMenu(accountSender);
+                    accountSender = null;
+                }
+            }, accountMenu);
             bankMenu.addItem(accountList);
         }
     }
@@ -61,9 +73,8 @@ public class Builder {
             System.out.println(transactionController.withdrawFunds(accountDto.getAccountNumber(), sum));
         }, accountMenu);
         accountMenu.addItem(withdrawFunds);
-        MenuItem transferMoney = new MenuItem("Перевести деньги на другой счет", () -> {
-            System.out.println("Еще не реализовано");
-        }, accountMenu);
+        MenuItem transferMoney = new MenuItem("Перевести деньги на другой счет", () ->
+                accountSender = accountDto, rootMenu);
         accountMenu.addItem(transferMoney);
         MenuItem getAccountInformation = new MenuItem("Получить информацию о счете", () -> {
             AccountDto newAccountDto = accountController.getAccountDto(accountDto.getAccountNumber());

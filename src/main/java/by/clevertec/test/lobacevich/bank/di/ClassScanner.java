@@ -16,7 +16,7 @@ public class ClassScanner {
         File file = new File(path);
         if (file.isFile() && file.getPath().endsWith(".java")) {
             classes.add(createClassFromPath(file.getPath()));
-        } else if (file.isDirectory() && file.listFiles() != null && !file.getPath().endsWith("target")) {
+        } else if (file.isDirectory() && file.listFiles() != null) {
             for (File f : file.listFiles()) {
                 classes.addAll(getClassList(f.getPath()));
             }

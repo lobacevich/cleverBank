@@ -10,7 +10,6 @@ public class Main {
     private static MenuController menuController;
 
     public static void main(String[] args) {
-
         DependenciesHandler.injectDependencies();
         menuController.run();
     }

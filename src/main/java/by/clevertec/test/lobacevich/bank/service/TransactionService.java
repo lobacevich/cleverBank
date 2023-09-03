@@ -9,4 +9,7 @@ public interface TransactionService {
 
     void withdrawFunds(String accountNumber, Double sum)
             throws DataBaseException, NotEnoughtFundsException;
+
+    void makeTransfer(String accountSenderNumber, String accountReceiverNumber, Double sum)
+            throws DataBaseException, NotEnoughtFundsException;
 }
