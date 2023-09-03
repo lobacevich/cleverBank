@@ -1,3 +1,4 @@
 Connect.url: "jdbc:postgresql://localhost:5432/clever_bank"
 Connect.username: "postgres"
 Connect.password: "root"
+percent: 1

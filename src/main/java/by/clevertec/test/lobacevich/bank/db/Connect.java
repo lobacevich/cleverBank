@@ -16,11 +16,10 @@ public class Connect {
     private static final String username;
     private static final String password;
     private static final Connection CONNECTION;
-    public static final String PATH = "src/main/resources/config.yml";
 
     static {
         try {
-            Map<String, Object> data = YamlReader.getMap(PATH);
+            Map<String, Object> data = YamlReader.getMap();
             url = (String) data.get("Connect.url");
             username = (String) data.get("Connect.username");
             password = (String) data.get("Connect.password");

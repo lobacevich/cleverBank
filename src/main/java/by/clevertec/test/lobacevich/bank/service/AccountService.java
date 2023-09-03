@@ -10,4 +10,6 @@ public interface AccountService {
     List<AccountDto> getBankAccountDtos(String bankName) throws DataBaseException;
 
     AccountDto getAccountDtoByNumber(String accountNumber) throws DataBaseException;
+
+    void checkAccountsInterest();
 }

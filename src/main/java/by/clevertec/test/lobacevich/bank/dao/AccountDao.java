@@ -11,4 +11,6 @@ public interface AccountDao extends GenericDao<Account> {
     List<Account> getBankAccounts(Long bank_id, Connection connection) throws DataBaseException;
 
     Account getAccountByNumber(String accountNumber, Connection connection) throws DataBaseException;
+
+    List<Account> getAllAccounts(Connection connection) throws DataBaseException;
 }

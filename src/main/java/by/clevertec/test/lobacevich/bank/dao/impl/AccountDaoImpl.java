@@ -9,6 +9,7 @@ import by.clevertec.test.lobacevich.bank.entity.Account;
 import by.clevertec.test.lobacevich.bank.exception.DataBaseException;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,13 +21,14 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
     @Dependency(implementation = "BankDaoImpl")
     private BankDao bankDao;
     private static final String CREATE_ACCOUNT = "INSERT INTO accounts(user_id, bank_id, account_number, " +
-            "creation_date, balance) VALUES(?, ?, ?, ?, ?);";
+            "creation_date, balance, last_interest) VALUES(?, ?, ?, ?, ?, ?);";
     private static final String UPDATE_ACCOUNT = "UPDATE accounts SET user_id=?, bank_id=?, " +
-            "account_number=?, creation_date=?, balance=? WHERE id=?;";
+            "account_number=?, creation_date=?, balance=?, last_interest=? WHERE id=?;";
     private static final String DELETE_ACCOUNT = "DELETE FROM accounts WHERE id=?;";
     private static final String GET_BY_ID = "SELECT * FROM accounts WHERE id=?";
     private static final String GET_BANK_ACCOUNTS = "SELECT * FROM accounts WHERE bank_id=?";
     private static final String GET_BY_NUMBER = "SELECT * FROM accounts WHERE account_number=?";
+    private static final String GET_ALL = "SELECT * FROM accounts";
 
     @Override
     public void createEntity(Account account, Connection connection) throws DataBaseException {
@@ -36,6 +38,7 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
             ps.setString(3, account.getAccountNumber());
             ps.setDate(4, Date.valueOf(account.getCreationDate()));
             ps.setBigDecimal(5, account.getBalance());
+            ps.setObject(6, account.getLastInterest());
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new DataBaseException("DB failed: Can't create account");
@@ -50,7 +53,8 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
             ps.setString(3, account.getAccountNumber());
             ps.setDate(4, Date.valueOf(account.getCreationDate()));
             ps.setBigDecimal(5, account.getBalance());
-            ps.setLong(6, account.getId());
+            ps.setObject(6, account.getLastInterest());
+            ps.setLong(7, account.getId());
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new DataBaseException("DB failed: Can't update account");
@@ -90,6 +94,7 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
             account.setAccountNumber(rs.getString("account_number"));
             account.setCreationDate(rs.getDate("creation_date").toLocalDate());
             account.setBalance(rs.getBigDecimal("balance"));
+            account.setLastInterest(rs.getObject("last_interest", LocalDateTime.class));
             return account;
         } catch (SQLException e) {
             throw new DataBaseException("DB failed: Can't load account");
@@ -124,6 +129,21 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
             }
         } catch (SQLException e) {
             throw new DataBaseException("DB failed: Can't get account by id");
+        }
+    }
+
+    @Override
+    public List<Account> getAllAccounts(Connection connection) throws DataBaseException {
+        List<Account> accounts = new ArrayList<>();
+        try (PreparedStatement ps = connection.prepareStatement(GET_ALL)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Account account = resultSetToAccount(rs, connection);
+                accounts.add(account);
+            }
+            return accounts;
+        } catch (SQLException e) {
+            throw new DataBaseException("DB failed: Can't load accounts");
         }
     }
 }
