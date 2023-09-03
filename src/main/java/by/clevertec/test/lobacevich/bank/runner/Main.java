@@ -6,6 +6,7 @@ import by.clevertec.test.lobacevich.bank.exception.DataBaseException;
 import by.clevertec.test.lobacevich.bank.service.AccountService;
 import by.clevertec.test.lobacevich.bank.ui.MenuController;
 
+import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -17,7 +18,7 @@ public class Main {
     @Dependency(implementation = "AccountServiceImpl")
     private static AccountService accountService;
 
-    public static void main(String[] args) throws DataBaseException {
+    public static void main(String[] args) throws DataBaseException, IOException {
         DependenciesHandler.injectDependencies();
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         Runnable task = () -> accountService.checkAccountsInterest();

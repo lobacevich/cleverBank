@@ -9,6 +9,8 @@ import by.clevertec.test.lobacevich.bank.exception.DataBaseException;
 
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Singleton
 public class TransactionDaoImpl extends AbstractDao<Transaction> implements TransactionDao {
@@ -21,6 +23,7 @@ public class TransactionDaoImpl extends AbstractDao<Transaction> implements Tran
             "account_receiver_id=?, date_time=?, summ=? WHERE id=?;";
     private static final String DELETE_TRANSACTION = "DELETE FROM transactions WHERE id=?;";
     private static final String GET_BY_ID = "SELECT * FROM transactions WHERE id=?";
+    private static final String GET_ALL = "SELECT * FROM transactions ORDER BY id";
 
     @Override
     public void createEntity(Transaction transaction, Connection connection) throws DataBaseException {
@@ -102,6 +105,21 @@ public class TransactionDaoImpl extends AbstractDao<Transaction> implements Tran
             return transaction;
         } catch (SQLException e) {
             throw new DataBaseException("DB failed: Can't load transaction");
+        }
+    }
+
+    @Override
+    public List<Transaction> getAllEntities(Connection connection) throws DataBaseException {
+        List<Transaction> transactions = new ArrayList<>();
+        try (PreparedStatement ps = connection.prepareStatement(GET_ALL)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Transaction transaction = resultSetToTransaction(rs, connection);
+                transactions.add(transaction);
+            }
+            return transactions;
+        } catch (SQLException e) {
+            throw new DataBaseException("DB failed: Can't load accounts");
         }
     }
 }

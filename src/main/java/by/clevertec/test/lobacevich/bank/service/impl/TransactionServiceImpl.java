@@ -10,11 +10,14 @@ import by.clevertec.test.lobacevich.bank.entity.Transaction;
 import by.clevertec.test.lobacevich.bank.exception.ConnectionException;
 import by.clevertec.test.lobacevich.bank.exception.DataBaseException;
 import by.clevertec.test.lobacevich.bank.exception.NotEnoughtFundsException;
+import by.clevertec.test.lobacevich.bank.pdf.PdfGenerator;
 import by.clevertec.test.lobacevich.bank.service.TransactionService;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 @Singleton
 public class TransactionServiceImpl implements TransactionService {
@@ -24,6 +27,8 @@ public class TransactionServiceImpl implements TransactionService {
     private TransactionDao transactionDao;
     @Dependency(implementation = "AccountDaoImpl")
     private AccountDao accountDao;
+    @Dependency
+    private PdfGenerator pdfGenerator;
 
     @Override
     public void topUpAccount(String accountNumber, Double sum) throws DataBaseException {
@@ -35,7 +40,8 @@ public class TransactionServiceImpl implements TransactionService {
             accountDao.updateEntity(account, CONNECTION);
             transactionDao.createEntity(transaction, CONNECTION);
             CONNECTION.commit();
-        } catch (SQLException | DataBaseException e) {
+            pdfGenerator.printCheck(transaction, getCheckNumber());
+        } catch (SQLException | DataBaseException | IOException e) {
             try {
                 CONNECTION.rollback();
             } catch (SQLException ex) {
@@ -62,7 +68,8 @@ public class TransactionServiceImpl implements TransactionService {
                 accountDao.updateEntity(account, CONNECTION);
                 transactionDao.createEntity(transaction, CONNECTION);
                 CONNECTION.commit();
-            } catch (SQLException | DataBaseException e) {
+                pdfGenerator.printCheck(transaction, getCheckNumber());
+            } catch (SQLException | DataBaseException | IOException e) {
                 try {
                     CONNECTION.rollback();
                 } catch (SQLException ex) {
@@ -102,6 +109,7 @@ public class TransactionServiceImpl implements TransactionService {
             accountDao.updateEntity(accountReceiver, CONNECTION);
             transactionDao.createEntity(transaction, CONNECTION);
             CONNECTION.commit();
+            pdfGenerator.printCheck(transaction, getCheckNumber());
         } catch (SQLException | DataBaseException e) {
             try {
                 CONNECTION.rollback();
@@ -114,6 +122,17 @@ public class TransactionServiceImpl implements TransactionService {
                     throw new ConnectionException("Ошибка соединения с БД");
                 }
             }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+    }
+
+    private String getCheckNumber() throws DataBaseException {
+        List<Transaction> transactions = transactionDao.getAllEntities(CONNECTION);
+        if (transactions.isEmpty()) {
+            return "1";
+        }
+        Long checkNumber = transactions.get(transactions.size() - 1).getId() + 1;
+        return checkNumber.toString();
     }
 }

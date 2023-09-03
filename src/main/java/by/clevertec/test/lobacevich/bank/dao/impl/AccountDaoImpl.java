@@ -133,7 +133,7 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
     }
 
     @Override
-    public List<Account> getAllAccounts(Connection connection) throws DataBaseException {
+    public List<Account> getAllEntities(Connection connection) throws DataBaseException {
         List<Account> accounts = new ArrayList<>();
         try (PreparedStatement ps = connection.prepareStatement(GET_ALL)) {
             ResultSet rs = ps.executeQuery();

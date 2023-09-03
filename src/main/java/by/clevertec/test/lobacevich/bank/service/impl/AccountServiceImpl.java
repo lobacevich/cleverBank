@@ -48,7 +48,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public void checkAccountsInterest() {
         try {
-            List<Account> accounts = accountDao.getAllAccounts(CONNECTION);
+            List<Account> accounts = accountDao.getAllEntities(CONNECTION);
             for (Account account : accounts) {
                 checkAccount(account);
             }
