@@ -6,11 +6,19 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * класс, который находит все классы проекта
+ */
 public class ClassScanner {
 
     private ClassScanner() {
     }
 
+    /**
+     * рекурсивно обходит все каталоги и файлы проекта, выбирая файлы, являющиеся классами и создает из них классы
+     * @param path путь, по которому происходит поис классов
+     * @return список всех найденных классов
+     */
     public static List<Class<?>> getClassList(String path) {
         List<Class<?>> classes = new ArrayList<>();
         File file = new File(path);
@@ -24,6 +32,11 @@ public class ClassScanner {
         return classes;
     }
 
+    /**
+     * на основании пути к файлу получает название класса и формирует из него сам класс
+     * @param path путь к файлу класса
+     * @return готовый класс
+     */
     private static Class<?> createClassFromPath(String path) {
         try {
             return Class.forName(path.replace(".\\src\\main\\java\\", "")
