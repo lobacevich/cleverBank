@@ -12,6 +12,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * класс для преобразования объектов в запись бд и записи бд в объекты
+ */
 @Singleton
 public class BankDaoImpl extends AbstractDao<Bank> implements BankDao {
 
@@ -22,6 +25,12 @@ public class BankDaoImpl extends AbstractDao<Bank> implements BankDao {
     private static final String GET_ALL = "SELECT * FROM banks";
     private static final String GET_BY_NAME = "SELECT * FROM banks WHERE name=?";
 
+    /**
+     * записать объект в бд
+     * @param bank банк
+     * @param connection соединение с бд
+     * @throws DataBaseException в случае, если не удается связаться с бд пробрасывает в слой сервисов исключение
+     */
     @Override
     public void createEntity(Bank bank, Connection connection) throws DataBaseException {
         try (PreparedStatement ps = connection.prepareStatement(CREATE_BANK)){
@@ -33,6 +42,12 @@ public class BankDaoImpl extends AbstractDao<Bank> implements BankDao {
         }
     }
 
+    /**
+     * обновляет запись объекта в бд
+     * @param bank объект банк
+     * @param connection соединение с бд
+     * @throws DataBaseException в случае, если не удается связаться с бд пробрасывает в слой сервисов исключение
+     */
     @Override
     public void updateEntity(Bank bank, Connection connection) throws DataBaseException {
         try (PreparedStatement ps = connection.prepareStatement(UPDATE_BANK)) {
@@ -45,6 +60,12 @@ public class BankDaoImpl extends AbstractDao<Bank> implements BankDao {
         }
     }
 
+    /**
+     * удаляет запись об объекте из бд
+     * @param bank объект банка
+     * @param connection соединение с бд
+     * @throws DataBaseException в случае, если не удается связаться с бд пробрасывает в слой сервисов исключение
+     */
     @Override
     public void deleteEntity(Bank bank, Connection connection) throws DataBaseException {
         try (PreparedStatement ps = connection.prepareStatement(DELETE_BANK)) {
@@ -55,6 +76,13 @@ public class BankDaoImpl extends AbstractDao<Bank> implements BankDao {
         }
     }
 
+    /**
+     * получает объект класса по айди
+     * @param id айди объекта
+     * @param connection соединение с бд
+     * @return объект класса банк
+     * @throws DataBaseException в случае, если не удается связаться с бд пробрасывает в слой сервисов исключение
+     */
     @Override
     public Bank getEntityById(long id, Connection connection) throws DataBaseException {
         try (PreparedStatement ps = connection.prepareStatement(GET_BY_ID)) {
@@ -70,6 +98,12 @@ public class BankDaoImpl extends AbstractDao<Bank> implements BankDao {
         }
     }
 
+    /**
+     * по ответу из бд формирует объект
+     * @param rs ответ из бд
+     * @return объект класса банк
+     * @throws DataBaseException в случае, если не удается связаться с бд пробрасывает в слой сервисов исключение
+     */
     private Bank resultSetToBank(ResultSet rs) throws DataBaseException {
         try {
             Bank bank = new Bank(rs.getLong("id"));
@@ -81,6 +115,12 @@ public class BankDaoImpl extends AbstractDao<Bank> implements BankDao {
         }
     }
 
+    /**
+     * возвращает список всех банков из бд
+     * @param connection соединение с бд
+     * @return список всех банков из бд
+     * @throws DataBaseException в случае, если не удается связаться с бд пробрасывает в слой сервисов исключение
+     */
     @Override
     public List<Bank> getAllEntities(Connection connection) throws DataBaseException {
         List<Bank> banks = new ArrayList<>();
@@ -96,6 +136,13 @@ public class BankDaoImpl extends AbstractDao<Bank> implements BankDao {
         }
     }
 
+    /**
+     * возвращает объект банка по названию
+     * @param name название банка
+     * @param connection соединение с бд
+     * @return объект банка
+     * @throws DataBaseException в случае, если не удается связаться с бд пробрасывает в слой сервисов исключение
+     */
     @Override
     public Bank getBankByName(String name, Connection connection) throws DataBaseException {
         try (PreparedStatement ps = connection.prepareStatement(GET_BY_NAME)) {

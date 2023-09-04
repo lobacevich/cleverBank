@@ -10,6 +10,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Map;
 
+/**
+ * предоставляет соединение с бд
+ */
 public class Connect {
 
     private static final String url;

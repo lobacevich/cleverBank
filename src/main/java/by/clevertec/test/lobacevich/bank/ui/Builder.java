@@ -11,6 +11,9 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * класс, предназначенный для создания меню
+ */
 @Singleton
 public class Builder {
 
@@ -28,6 +31,13 @@ public class Builder {
     private AccountController accountController;
     AccountDto accountSender;
 
+    /**
+     * строится главное меню, в которое переходит программа при запуске
+     * <p>
+     *     меню состоит из списка всех банков и пользователь может выбрать тот, счетом в котором
+     *     он хочет воспользоваться
+     * </p>
+     */
     public void buildRootMenu() {
         List<String> bankNames = bankController.getBankNames();
         for (String bankName : bankNames) {
@@ -36,6 +46,10 @@ public class Builder {
         }
     }
 
+    /**
+     * меню, состоящее из списка всех счетов в данном банке
+     * @param bankName название банка, в котором находятся данные счета
+     */
     public void buildBankMenu(String bankName) {
         bankMenu.getMenuItems().clear();
         List<AccountDto> accountDtoList = accountController.getBankAccountDtos(bankName);
@@ -59,6 +73,10 @@ public class Builder {
         }
     }
 
+    /**
+     * меню, в котором пользователь выбирает, какие действия он хочет осуществить с выбранным счетом
+     * @param accountDto ДТО аккаунта, с которым пользователь будет производит действия
+     */
     public void buildAccountMenu(AccountDto accountDto) {
         accountMenu.getMenuItems().clear();
         MenuItem topUpAccount = new MenuItem("Пополнить счет", () -> {

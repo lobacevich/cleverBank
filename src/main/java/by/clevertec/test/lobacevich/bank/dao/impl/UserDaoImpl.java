@@ -10,6 +10,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * класс для записи объектов класса счет в банке в бд и формирования объектов на основании
+ * ответов бд
+ */
 @Singleton
 public class UserDaoImpl extends AbstractDao<User> implements UserDao {
 
@@ -20,6 +24,12 @@ public class UserDaoImpl extends AbstractDao<User> implements UserDao {
     private static final String DELETE_USER = "DELETE FROM users WHERE id=?;";
     private static final String GET_BY_ID = "SELECT * FROM users WHERE id=?";
 
+    /**
+     * создает запись об объекте в бд
+     * @param user
+     * @param connection соединение с бд
+     * @throws DataBaseException в случае, если не удается связаться с бд пробрасывает в слой сервисов исключение
+     */
     @Override
     public void createEntity(User user, Connection connection) throws DataBaseException {
         try (PreparedStatement ps = connection.prepareStatement(CREATE_USER)) {
@@ -34,6 +44,12 @@ public class UserDaoImpl extends AbstractDao<User> implements UserDao {
         }
     }
 
+    /**
+     * обновляет запись об объекте в бд
+     * @param user объект пользователь
+     * @param connection соединение с бд
+     * @throws DataBaseException в случае, если не удается связаться с бд пробрасывает в слой сервисов исключение
+     */
     @Override
     public void updateEntity(User user, Connection connection) throws DataBaseException {
         try (PreparedStatement ps = connection.prepareStatement(UPDATE_USER)) {
@@ -49,6 +65,12 @@ public class UserDaoImpl extends AbstractDao<User> implements UserDao {
         }
     }
 
+    /**
+     * удаляет запись об объекте из бд
+     * @param user объект пользователь
+     * @param connection соединение с бд
+     * @throws DataBaseException в случае, если не удается связаться с бд пробрасывает в слой сервисов исключение
+     */
     @Override
     public void deleteEntity(User user, Connection connection) throws DataBaseException {
         try (PreparedStatement ps = connection.prepareStatement(DELETE_USER)) {
@@ -59,6 +81,13 @@ public class UserDaoImpl extends AbstractDao<User> implements UserDao {
         }
     }
 
+    /**
+     * возвращает объект по айди
+     * @param id айди объекта
+     * @param connection соединение с бд
+     * @return объект пользователь
+     * @throws DataBaseException в случае, если не удается связаться с бд пробрасывает в слой сервисов исключение
+     */
     @Override
     public User getEntityById(long id, Connection connection) throws DataBaseException {
         try (PreparedStatement ps = connection.prepareStatement(GET_BY_ID)) {
@@ -74,6 +103,12 @@ public class UserDaoImpl extends AbstractDao<User> implements UserDao {
         }
     }
 
+    /**
+     * возвращает объект по ответу от сервера
+     * @param rs ответ от сервера
+     * @return объект пользователь
+     * @throws DataBaseException в случае, если не удается связаться с бд пробрасывает в слой сервисов исключение
+     */
     private User resultSetToUser(ResultSet rs) throws DataBaseException {
         try {
             User user = new User(rs.getLong("id"));

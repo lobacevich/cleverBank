@@ -10,6 +10,10 @@ import by.clevertec.test.lobacevich.bank.exception.DataBaseException;
 import java.sql.*;
 import java.time.LocalDateTime;
 
+/**
+ * класс для записи объектов класса счет в банке в бд и формирования объектов на основании
+ * ответов бд
+ */
 @Singleton
 public class TransactionDaoImpl extends AbstractDao<Transaction> implements TransactionDao {
 
@@ -22,6 +26,12 @@ public class TransactionDaoImpl extends AbstractDao<Transaction> implements Tran
     private static final String DELETE_TRANSACTION = "DELETE FROM transactions WHERE id=?;";
     private static final String GET_BY_ID = "SELECT * FROM transactions WHERE id=?";
 
+    /**
+     * создает объект из записи в бд
+     * @param transaction объект транзакция
+     * @param connection соединение с бд
+     * @throws DataBaseException в случае, если не удается связаться с бд пробрасывает в слой сервисов исключение
+     */
     @Override
     public void createEntity(Transaction transaction, Connection connection) throws DataBaseException {
         try (PreparedStatement ps = connection.prepareStatement(CREATE_TRANSACTION)) {
@@ -43,6 +53,12 @@ public class TransactionDaoImpl extends AbstractDao<Transaction> implements Tran
         }
     }
 
+    /**
+     * обновляет запись в бд
+     * @param transaction объект транзакция
+     * @param connection соединение с бд
+     * @throws DataBaseException в случае, если не удается связаться с бд пробрасывает в слой сервисов исключение
+     */
     @Override
     public void updateEntity(Transaction transaction, Connection connection) throws DataBaseException {
         try (PreparedStatement ps = connection.prepareStatement(UPDATE_TRANSACTION)) {
@@ -65,6 +81,12 @@ public class TransactionDaoImpl extends AbstractDao<Transaction> implements Tran
         }
     }
 
+    /**
+     * удаляет запись из бд
+     * @param transaction объект транзакция
+     * @param connection соединение с бд
+     * @throws DataBaseException в случае, если не удается связаться с бд пробрасывает в слой сервисов исключение
+     */
     @Override
     public void deleteEntity(Transaction transaction, Connection connection) throws DataBaseException {
         try (PreparedStatement ps = connection.prepareStatement(DELETE_TRANSACTION)) {
@@ -75,6 +97,13 @@ public class TransactionDaoImpl extends AbstractDao<Transaction> implements Tran
         }
     }
 
+    /**
+     * возвращает объект по номеру айди
+     * @param id айди объекта
+     * @param connection соединение с бд
+     * @return объект транзакции
+     * @throws DataBaseException в случае, если не удается связаться с бд пробрасывает в слой сервисов исключение
+     */
     @Override
     public Transaction getEntityById(long id, Connection connection) throws DataBaseException {
         try (PreparedStatement ps = connection.prepareStatement(GET_BY_ID)) {
@@ -90,6 +119,13 @@ public class TransactionDaoImpl extends AbstractDao<Transaction> implements Tran
         }
     }
 
+    /**
+     * создает объект на основании ответа из бд
+     * @param rs ответ бд
+     * @param connection соединение с бд
+     * @return объект транзакции
+     * @throws DataBaseException в случае, если не удается связаться с бд пробрасывает в слой сервисов исключение
+     */
     private Transaction resultSetToTransaction(ResultSet rs, Connection connection) throws DataBaseException {
         try {
             Transaction transaction = new Transaction(rs.getLong("id"));

@@ -11,9 +11,6 @@ public class Navigator {
     @Setter
     private Menu currentMenu;
 
-    private Navigator() {
-    }
-
     public void printMenu() {
         System.out.println("\n" + currentMenu.getName());
         System.out.println(0 + "\tВыход из программы");

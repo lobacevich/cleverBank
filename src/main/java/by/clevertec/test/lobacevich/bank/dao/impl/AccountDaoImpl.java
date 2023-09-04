@@ -13,6 +13,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * класс для записи объектов класса счет в банке в бд и формирования объектов на основании
+ * ответов бд
+ */
 @Singleton
 public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
 
@@ -30,6 +34,12 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
     private static final String GET_BY_NUMBER = "SELECT * FROM accounts WHERE account_number=?";
     private static final String GET_ALL = "SELECT * FROM accounts";
 
+    /**
+     * создает запись в бд из объекта
+     * @param account объект счета в банке
+     * @param connection подсоединение к бд
+     * @throws DataBaseException в случае, если не удается связаться с бд пробрасывает в слой сервисов исключение
+     */
     @Override
     public void createEntity(Account account, Connection connection) throws DataBaseException {
         try (PreparedStatement ps = connection.prepareStatement(CREATE_ACCOUNT)) {
@@ -45,6 +55,12 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
         }
     }
 
+    /**
+     * обновляет запись объекта в бж
+     * @param account объект счета в банке, который надо обновить
+     * @param connection соединение с бд
+     * @throws DataBaseException в случае, если не удается связаться с бд пробрасывает в слой сервисов исключение
+     */
     @Override
     public void updateEntity(Account account, Connection connection) throws DataBaseException {
         try (PreparedStatement ps = connection.prepareStatement(UPDATE_ACCOUNT)) {
@@ -61,6 +77,12 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
         }
     }
 
+    /**
+     * удаляет запись из бд
+     * @param account объект счета в банке, который надо удалить
+     * @param connection соединение с бд
+     * @throws DataBaseException в случае, если не удается связаться с бд пробрасывает в слой сервисов исключение
+     */
     @Override
     public void deleteEntity(Account account, Connection connection) throws DataBaseException {
         try (PreparedStatement ps = connection.prepareStatement(DELETE_ACCOUNT)) {
@@ -71,6 +93,13 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
         }
     }
 
+    /**
+     * получает сущность из бд
+     * @param id сущности, которую надо получить
+     * @param connection соединение с бд
+     * @return готовый объект, айди которого был в параметрах
+     * @throws DataBaseException в случае, если не удается связаться с бд пробрасывает в слой сервисов исключение
+     */
     @Override
     public Account getEntityById(long id, Connection connection) throws DataBaseException {
         try (PreparedStatement ps = connection.prepareStatement(GET_BY_ID)) {
@@ -86,6 +115,13 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
         }
     }
 
+    /**
+     * по ответу из бд формирует объект
+     * @param rs ответ из бд
+     * @param connection соединение с бд
+     * @return объект счета в банке
+     * @throws DataBaseException в случае, если не удается связаться с бд пробрасывает в слой сервисов исключение
+     */
     private Account resultSetToAccount(ResultSet rs, Connection connection) throws DataBaseException {
         try {
             Account account = new Account(rs.getLong("id"));
@@ -101,6 +137,13 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
         }
     }
 
+    /**
+     * выдает все аккаунты банка
+     * @param bank_id айди банка
+     * @param connection соединение с бд
+     * @return объекты всех счетов в данном банке
+     * @throws DataBaseException в случае, если не удается связаться с бд пробрасывает в слой сервисов исключение
+     */
     @Override
     public List<Account> getBankAccounts(Long bank_id, Connection connection) throws DataBaseException {
         List<Account> accounts = new ArrayList<>();
@@ -117,6 +160,13 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
         }
     }
 
+    /**
+     * выдает объект счета в банке по номеру счета
+     * @param accountNumber номер счета
+     * @param connection соединение с бд
+     * @return объект счета
+     * @throws DataBaseException в случае, если не удается связаться с бд пробрасывает в слой сервисов исключение
+     */
     @Override
     public Account getAccountByNumber(String accountNumber, Connection connection) throws DataBaseException {
         try (PreparedStatement ps = connection.prepareStatement(GET_BY_NUMBER)) {
@@ -132,6 +182,12 @@ public class AccountDaoImpl extends AbstractDao<Account> implements AccountDao {
         }
     }
 
+    /**
+     * возвращает все счета
+     * @param connection соединение с бд
+     * @return все счета из бд
+     * @throws DataBaseException в случае, если не удается связаться с бд пробрасывает в слой сервисов исключение
+     */
     @Override
     public List<Account> getAllAccounts(Connection connection) throws DataBaseException {
         List<Account> accounts = new ArrayList<>();

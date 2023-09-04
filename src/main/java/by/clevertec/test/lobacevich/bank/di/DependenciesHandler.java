@@ -8,6 +8,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * класс, управляющий инверсией зависимостей
+ */
 public class DependenciesHandler {
 
     private DependenciesHandler() {
@@ -15,6 +18,12 @@ public class DependenciesHandler {
 
     private static final Map<Class<?>, Object> MAP_BEANS = new HashMap<>();
 
+    /**
+     * класс, который внедряет зависимости
+     * <p>
+     *     класс, который управляет другими классами для внедрения зависимостей
+     * </p>
+     */
     public static void injectDependencies() {
         List<Class<?>> allClasses = ClassScanner.getClassList(".\\src\\main\\java");
         List<Class<?>> classes = findSingletonClasses(allClasses);
@@ -24,11 +33,21 @@ public class DependenciesHandler {
         setFieldsValues(fields);
     }
 
+    /**
+     * находит среди всех классов классы, аннотированные Singleton
+     * @param classes все классы проекта, которые дает ClassScanner.getClassList
+     * @return все классы, аннотированные Singleton
+     */
     private static List<Class<?>> findSingletonClasses(List<Class<?>> classes) {
         return classes.stream().filter(cl -> cl.isAnnotationPresent(Singleton.class))
                 .collect(Collectors.toList());
     }
 
+    /**
+     * находит поля, в которые надо внедрить зависимости, в списке всех классов
+     * @param classes список всех классов проекта
+     * @return список полей, аннотированных Dependency
+     */
     private static List<Field> findAnnotatedFields(List<Class<?>> classes) {
         List<Field> fields = new ArrayList<>();
         for (Class<?> cl : classes) {
@@ -38,14 +57,27 @@ public class DependenciesHandler {
         return fields;
     }
 
+    /**
+     * применяет ко всем классам метод setMapBeans
+     * @param classes классы, анноторованные Singleton
+     */
     private static void addBeansFromClasses(List<Class<?>> classes) {
         classes.forEach(DependenciesHandler::setMapBeans);
     }
 
+    /**
+     * применяет ко всем классам, содержащим данные поля, метод setMapBeans
+     * @param fields поля, анноторованные Dependency
+     */
     private static void addBeansFromFields(List<Field> fields) {
         fields.stream().map(Field::getDeclaringClass).forEach(DependenciesHandler::setMapBeans);
     }
 
+    /**
+     * заполняет мапу MAP_BEANS значениями класс и объект класса
+     * @param clazz принимает любой класс
+     * @param <T> дженерик метода
+     */
     private static <T> void setMapBeans(Class<T> clazz) {
         try {
             Constructor<T> constructor = clazz.getDeclaredConstructor();
@@ -54,16 +86,28 @@ public class DependenciesHandler {
                 MAP_BEANS.put(clazz, constructor.newInstance());
             }
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new DependenciesHandlerException("Can't create bean");
+            throw new DependenciesHandlerException("Не могу создать объект класса");
         } catch (NoSuchMethodException e) {
-            throw new DependenciesHandlerException("Can't create constructor");
+            throw new DependenciesHandlerException("Не могу создать конструктор");
         }
     }
 
+    /**
+     * применяет ко всем полям метод setFieldValue
+     * @param fields поля, в которые надо внедрит зависимости
+     */
     private static void setFieldsValues(List<Field> fields) {
         fields.forEach(DependenciesHandler::setFieldValue);
     }
 
+    /**
+     * внедряет зависимость в поле
+     * <p>
+     *     ищет класс по названию класса, указанному в аннотации как имплементация, в иных случаях
+     *     по названию поля
+     * </p>
+     * @param field поле, куда надо внедрить зависимость
+     */
     private static void setFieldValue(Field field) {
         field.setAccessible(true);
         Object value;
