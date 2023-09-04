@@ -1,9 +1,11 @@
 plugins {
     id("java")
+    id("application")
+    kotlin("jvm") version "1.9.10"
 }
 
 group = "org.example"
-version = "1.0-SNAPSHOT"
+version = "1"
 
 repositories {
     mavenCentral()
@@ -18,8 +20,13 @@ dependencies {
 
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+    implementation(kotlin("stdlib-jdk8"))
 }
 
 tasks.test {
     useJUnitPlatform()
 }
+kotlin {
+    jvmToolchain(17)
+}
+
