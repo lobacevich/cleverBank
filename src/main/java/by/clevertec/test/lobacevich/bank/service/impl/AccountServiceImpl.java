@@ -21,6 +21,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * сервис, содержащий функции объектов счет в банке
+ */
 @Singleton
 public class AccountServiceImpl implements AccountService {
 
@@ -32,6 +35,12 @@ public class AccountServiceImpl implements AccountService {
     @Dependency(implementation = "BankDaoImpl")
     BankDao bankDao;
 
+    /**
+     * получить ДТО счетов в данном банке
+     * @param bankName название банка
+     * @return дто счетов
+     * @throws DataBaseException в случае, если не удается связаться с бд пробрасывает в слой контроллеров исключение
+     */
     @Override
     public List<AccountDto> getBankAccountDtos(String bankName) throws DataBaseException {
         Bank bank = bankDao.getBankByName(bankName, CONNECTION);
@@ -39,12 +48,21 @@ public class AccountServiceImpl implements AccountService {
                 .map(accountMapper::accountToDto).collect(Collectors.toList());
     }
 
+    /**
+     * получить ДТО счета по номеру
+     * @param accountNumber номер счета
+     * @return ДТО счета
+     * @throws DataBaseException в случае, если не удается связаться с бд пробрасывает в слой контроллеров исключение
+     */
     @Override
     public AccountDto getAccountDtoByNumber(String accountNumber) throws DataBaseException {
         Account account = accountDao.getAccountByNumber(accountNumber, CONNECTION);
         return accountMapper.accountToDto(account);
     }
 
+    /**
+     * проверяет, надо ли начислять проценты на остаток средств по всем аккаунтам
+     */
     @Override
     public void checkAccountsInterest() {
         try {
@@ -57,12 +75,24 @@ public class AccountServiceImpl implements AccountService {
         }
     }
 
+    /**
+     * проверяет, надо ли начислять проценты на остаток средств
+     * @param account объект аккаунта
+     * @throws IOException если происходит ошибка чтения
+     * @throws DataBaseException в случае, если не удается связаться с бд пробрасывает в слой контроллеров исключение
+     */
     private void checkAccount(Account account) throws IOException, DataBaseException {
         if (account.getLastInterest().isBefore(LocalDateTime.now().minusMonths(1))) {
             accrueInterest(account);
         }
     }
 
+    /**
+     * начисляет проценты на счет
+     * @param account объект счет в банке
+     * @throws IOException если происходит ошибка чтения
+     * @throws DataBaseException в случае, если не удается связаться с бд пробрасывает в слой контроллеров исключение
+     */
     private void accrueInterest(Account account) throws IOException, DataBaseException {
         int percent = (int) YamlReader.getMap().get("percent");
         BigDecimal result = account.getBalance().multiply(BigDecimal.valueOf(100 + percent))

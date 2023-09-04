@@ -19,6 +19,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * сервис, содержащий функции объектов транзакция
+ */
 @Singleton
 public class TransactionServiceImpl implements TransactionService {
 
@@ -30,6 +33,12 @@ public class TransactionServiceImpl implements TransactionService {
     @Dependency
     private PdfGenerator pdfGenerator;
 
+    /**
+     * пополнить счет
+     * @param accountNumber номер счета
+     * @param sum сумма пополнения
+     * @throws DataBaseException в случае, если не удается связаться с бд пробрасывает в слой контроллеров исключение
+     */
     @Override
     public void topUpAccount(String accountNumber, Double sum) throws DataBaseException {
         Account account = accountDao.getAccountByNumber(accountNumber, CONNECTION);
@@ -56,6 +65,13 @@ public class TransactionServiceImpl implements TransactionService {
         }
     }
 
+    /**
+     * снять деньги со счета
+     * @param accountNumber номер счета
+     * @param sum сумм
+     * @throws DataBaseException в случае, если не удается связаться с бд пробрасывает в слой контроллеров исключение
+     * @throws NotEnoughtFundsException если не хватает денег на счете
+     */
     @Override
     public void withdrawFunds(String accountNumber, Double sum)
             throws DataBaseException, NotEnoughtFundsException {
@@ -87,6 +103,14 @@ public class TransactionServiceImpl implements TransactionService {
         }
     }
 
+    /**
+     * перевести деньги на другой счет
+     * @param accountSenderNumber номер счета отправителя
+     * @param accountReceiverNumber номер счета получателя
+     * @param sum сумма
+     * @throws DataBaseException  если не удается связаться с бд пробрасывает в слой контроллеров исключение
+     * @throws NotEnoughtFundsException
+     */
     @Override
     public void makeTransfer(String accountSenderNumber, String accountReceiverNumber, Double sum)
             throws DataBaseException, NotEnoughtFundsException {
@@ -99,6 +123,12 @@ public class TransactionServiceImpl implements TransactionService {
         }
     }
 
+    /**
+     * перевести деньги на другой счет
+     * @param accountSender счет отправителя
+     * @param accountReceiver счет получателя
+     * @param sum сумма
+     */
     private void makeBankTransfer(Account accountSender, Account accountReceiver, Double sum) {
         accountSender.setBalance(accountSender.getBalance().subtract(BigDecimal.valueOf(sum)));
         accountReceiver.setBalance(accountReceiver.getBalance().add(BigDecimal.valueOf(sum)));
@@ -127,6 +157,11 @@ public class TransactionServiceImpl implements TransactionService {
         }
     }
 
+    /**
+     * получить номер чека на основании номера последней транзакции
+     * @return номер счета в формате строки
+     * @throws DataBaseException в случае, если не удается связаться с бд пробрасывает в слой сервисов исключение
+     */
     private String getCheckNumber() throws DataBaseException {
         List<Transaction> transactions = transactionDao.getAllEntities(CONNECTION);
         if (transactions.isEmpty()) {

@@ -15,9 +15,18 @@ import com.itextpdf.layout.element.Paragraph;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * позволяет создавать файлы pdf
+ */
 @Singleton
 public class PdfGenerator {
 
+    /**
+     * создает чек на основании последней транзакции
+     * @param transaction объект транзакции
+     * @param checkNumber номер чека
+     * @throws IOException выкидывает исключение если что-то идет не так
+     */
     public void printCheck(Transaction transaction, String checkNumber) throws IOException {
         String path = "check/check" + checkNumber + ".pdf";
         PdfWriter pdfWriter = new PdfWriter(path);
@@ -67,15 +76,32 @@ public class PdfGenerator {
         document.close();
     }
 
+    /**
+     * формирует строку на сновании входных данных
+     * @param left строка слева чека
+     * @param right строка слева чека
+     * @return строка чека
+     */
     private String getLine(String left, String right) {
         String spaces = getSpaces(left, right);
         return "| " + left + spaces + right + " |";
     }
 
+    /**
+     * просчитывает и возвращает строку, содержащую пробелы
+     * @param left строка слева чека
+     * @param right строка слева чека
+     * @return строка по центру с пробелами
+     */
     private String getSpaces(String left, String right) {
         return " ".repeat(Math.max(0, 36 - left.length() - right.length()));
     }
 
+    /**
+     * определяет тип транзакции
+     * @param transaction объект транзакции
+     * @return строку тип транзакции
+     */
     private String getTransactionType(Transaction transaction) {
         Account sender = transaction.getAccountSender();
         Account receiver = transaction.getAccountReceiver();

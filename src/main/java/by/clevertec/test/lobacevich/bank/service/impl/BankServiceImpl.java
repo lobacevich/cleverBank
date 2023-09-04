@@ -12,6 +12,9 @@ import java.sql.Connection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * сервис, содержащий функции объектов банк
+ */
 @Singleton
 public class BankServiceImpl implements BankService {
 
@@ -19,6 +22,11 @@ public class BankServiceImpl implements BankService {
     @Dependency(implementation = "BankDaoImpl")
     private BankDao bankDao;
 
+    /**
+     * возвращает названия всех банков
+     * @return список названий банков
+     * @throws DataBaseException в случае, если не удается связаться с бд пробрасывает в слой контроллеров исключение
+     */
     @Override
     public List<String> getBankNames() throws DataBaseException {
         List<Bank> banks = bankDao.getAllEntities(CONNECTION);
