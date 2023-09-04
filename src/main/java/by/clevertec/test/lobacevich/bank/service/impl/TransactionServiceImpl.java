@@ -109,7 +109,7 @@ public class TransactionServiceImpl implements TransactionService {
      * @param accountReceiverNumber номер счета получателя
      * @param sum сумма
      * @throws DataBaseException  если не удается связаться с бд пробрасывает в слой контроллеров исключение
-     * @throws NotEnoughtFundsException
+     * @throws NotEnoughtFundsException если не хватает денег на счете
      */
     @Override
     public void makeTransfer(String accountSenderNumber, String accountReceiverNumber, Double sum)
